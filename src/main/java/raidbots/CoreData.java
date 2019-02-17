@@ -10,6 +10,7 @@ import util.JacksonUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Helper functions for dealing with Raidbots' core data javascript files
@@ -68,7 +69,16 @@ public class CoreData {
     }
 
     public static long specIdForName(String _class, String name) {
-        return info.specInfo.get(_class).get(StringUtils.lowerCase(name).replaceAll("\\s", "_")).id;
+        Map<String, RBCharacterInfo.RBSpecInfo> specNameToInfo = info.specInfo.get(_class);
+        if (specNameToInfo == null) {
+            throw new RuntimeException(String.format("No class info found for '%'", _class));
+        }
+        String specName = StringUtils.lowerCase(name).replaceAll("\\s", "_");
+        RBCharacterInfo.RBSpecInfo specInfo = specNameToInfo.get(specName);
+        if (specInfo == null) {
+            throw new RuntimeException(String.format("No spec info found for '%'", specName));
+        }
+        return specInfo.id;
     }
 
     public static String classNameForId(long id) {
